@@ -1,14 +1,14 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/AI-Powered-6366f1?style=for-the-badge&logo=openai&logoColor=white" alt="AI Powered"/>
+  <img src="https://img.shields.io/badge/AI-Powered-6366f1?style=for-the-badge&logo=meta&logoColor=white" alt="AI Powered"/>
+  <img src="https://img.shields.io/badge/Llama_3.2-70B-orange?style=for-the-badge&logo=meta&logoColor=white" alt="Llama"/>
   <img src="https://img.shields.io/badge/Flask-Backend-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask"/>
   <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
-  <img src="https://img.shields.io/badge/Vite-Frontend-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
 </p>
 
-<h1 align="center">Solumi - Document Search Dashboard</h1>
+<h1 align="center">Solumi - AI Document Search Dashboard</h1>
 
 <p align="center">
-  <strong>Natural language document search powered by AI-generated SQL queries</strong>
+  <strong>Natural language document search powered by Ollama Llama 3.2 70B</strong>
 </p>
 
 <p align="center">
@@ -23,17 +23,65 @@
 ## Dashboard Preview
 
 <p align="center">
-  <img src="https://placehold.co/900x500/1e1b4b/6366f1?text=Dashboard+Main+View&font=inter" alt="Dashboard Main View" width="100%"/>
+  <img src="assets/dashboard-main.png" alt="Dashboard Main View" width="100%"/>
 </p>
 
 <p align="center">
-  <img src="https://placehold.co/440x280/0f172a/10b981?text=Search+Results&font=inter" alt="Search Results" width="49%"/>
-  <img src="https://placehold.co/440x280/0f172a/8b5cf6?text=Document+Preview&font=inter" alt="Document Preview" width="49%"/>
+  <em>Modern glassmorphism UI with dark/light mode support</em>
 </p>
 
 ---
 
-## Performance Metrics
+## AI-Generated SQL Queries
+
+<p align="center">
+  <img src="assets/search-results.png" alt="AI Generated SQL" width="100%"/>
+</p>
+
+<p align="center">
+  <em>Natural language queries instantly converted to optimized SQL</em>
+</p>
+
+---
+
+## Search Results
+
+<p align="center">
+  <img src="assets/results-table.png" alt="Results Table" width="100%"/>
+</p>
+
+<p align="center">
+  <em>Interactive results table with 27,100+ searchable documents</em>
+</p>
+
+---
+
+## Light Mode
+
+<p align="center">
+  <img src="assets/light-mode.png" alt="Light Mode" width="100%"/>
+</p>
+
+---
+
+## How It Works
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
+│  User Query     │────▶│  Llama 3.2 70B   │────▶│  SQL Query  │
+│  "find invoices │     │  (via Ollama)    │     │  Generated  │
+│   from 2024"    │     └──────────────────┘     └──────┬──────┘
+└─────────────────┘                                     │
+                                                        ▼
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
+│  Results with   │◀────│   PostgreSQL     │◀────│  Execute    │
+│  Match Reasons  │     │   Database       │     │  Query      │
+└─────────────────┘     └──────────────────┘     └─────────────┘
+```
+
+---
+
+## Performance
 
 <table align="center">
   <tr>
@@ -44,10 +92,6 @@
   </tr>
 </table>
 
-<p align="center">
-  <img src="https://placehold.co/800x200/1e293b/6366f1?text=Performance+Graph:+Avg+Response+Time+120ms+|+Peak+Load+1000+req/min&font=inter" alt="Performance Graph" width="100%"/>
-</p>
-
 ---
 
 ## Features
@@ -55,23 +99,24 @@
 | Feature | Description |
 |---------|-------------|
 | **Natural Language Search** | Ask questions in plain English - AI converts to optimized SQL |
+| **Ollama + Llama 3.2 70B** | Local LLM inference for fast, private SQL generation |
 | **Smart Fuzzy Matching** | Handles typos, variations, and inconsistent data formats |
 | **Multi-Field Search** | Searches across names, dates, companies, categories, and content |
 | **Real-time Results** | Instant search results with match explanations |
 | **Dark/Light Mode** | Glassmorphism UI with theme toggle |
+| **Export to CSV** | Download search results for further analysis |
 | **File Preview** | Open documents directly from search results |
-| **Date Range Queries** | Intelligent date parsing (e.g., "june 2023 to december 2024") |
 
 ---
 
 ## Tech Stack
 
 ```
-Frontend                Backend                 Database
-├── Vite               ├── Flask               └── PostgreSQL
-├── Bootstrap 5        ├── OpenAI GPT-4o-mini
-├── Vanilla JS         ├── psycopg2
-└── CSS3 Glassmorphism └── python-dotenv
+Frontend                Backend                 AI/Database
+├── Vite               ├── Flask               ├── Ollama
+├── Bootstrap 5        ├── psycopg2            ├── Llama 3.2 70B
+├── Vanilla JS         ├── python-dotenv       └── PostgreSQL
+└── CSS3 Glassmorphism └── REST API
 ```
 
 ---
@@ -82,7 +127,7 @@ Frontend                Backend                 Database
 - Python 3.10+
 - Node.js 18+
 - PostgreSQL
-- OpenAI API Key
+- [Ollama](https://ollama.ai/) with Llama 3.2 70B
 
 ### Installation
 
@@ -90,6 +135,9 @@ Frontend                Backend                 Database
 # Clone the repository
 git clone https://github.com/zeeza18/DASHBOARD-SOLUMI.git
 cd DASHBOARD-SOLUMI
+
+# Install Ollama and pull Llama model
+ollama pull llama3.2:70b
 
 # Backend setup
 cd backend
@@ -113,13 +161,16 @@ DB_PORT=5432
 DB_NAME=your_database
 DB_USER=postgres
 DB_PASSWORD=your_password
-OPENAI_API_KEY=sk-...
+OLLAMA_HOST=http://localhost:11434
 FILE_BASE_PATH=/path/to/documents
 ```
 
 ### Run
 
 ```bash
+# Make sure Ollama is running
+ollama serve
+
 # Start the server
 python backend/app.py
 ```
@@ -152,7 +203,7 @@ curl -X POST http://localhost:5000/query \
 |------------------------|---------------|
 | `"documents for John from 2024"` | All docs mentioning John dated 2024 |
 | `"billing invoices march to june 2023"` | Billing docs within date range |
-| `"legal compliance UML"` | Legal/compliance docs for US Medical Labs |
+| `"legal compliance documents"` | Legal/compliance category docs |
 | `"bank statements last quarter"` | Financial statements from recent months |
 
 ---
@@ -160,7 +211,7 @@ curl -X POST http://localhost:5000/query \
 ## Project Structure
 
 ```
-solumi-dashboard/
+DASHBOARD-SOLUMI/
 ├── backend/
 │   ├── app.py              # Flask application
 │   └── requirements.txt    # Python dependencies
@@ -171,19 +222,10 @@ solumi-dashboard/
 │   ├── index.html
 │   └── package.json
 ├── static/                  # Built frontend assets
+├── assets/                  # Screenshots
 ├── .env.example
 └── README.md
 ```
-
----
-
-## Benchmark Results
-
-<p align="center">
-  <img src="https://placehold.co/400x250/1e293b/10b981?text=Query+Speed%0A%0ASimple:+45ms%0AComplex:+180ms%0ARange:+95ms&font=inter" alt="Query Speed" width="32%"/>
-  <img src="https://placehold.co/400x250/1e293b/6366f1?text=Accuracy+Rate%0A%0AExact:+98.2%25%0AFuzzy:+94.7%25%0ADate:+96.1%25&font=inter" alt="Accuracy" width="32%"/>
-  <img src="https://placehold.co/400x250/1e293b/f59e0b?text=Load+Test%0A%0A100+users:+OK%0A500+users:+OK%0A1000+users:+OK&font=inter" alt="Load Test" width="32%"/>
-</p>
 
 ---
 
@@ -204,5 +246,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-  <strong>Built with AI</strong>
+  <strong>Powered by Ollama & Llama 3.2 70B</strong>
 </p>
