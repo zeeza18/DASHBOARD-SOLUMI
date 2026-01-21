@@ -5,10 +5,10 @@
   <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
 </p>
 
-<h1 align="center">Solumi - AI Document Search Dashboard</h1>
+<h1 align="center">AI Document Search Dashboard</h1>
 
 <p align="center">
-  <strong>Natural language document search powered by Ollama Llama 3.2 70B</strong>
+  <strong>Natural language to SQL - Search 168,000+ documents instantly</strong>
 </p>
 
 <p align="center">
@@ -23,40 +23,36 @@
 ## Dashboard Preview
 
 <p align="center">
-  <img src="assets/dashboard-main.png" alt="Dashboard Main View" width="100%"/>
-</p>
-
-<p align="center">
-  <em>Modern glassmorphism UI with dark/light mode support</em>
+  <img src="assets/dashboard-main.png" alt="Dashboard" width="100%"/>
 </p>
 
 ---
 
-## AI-Generated SQL Queries
+## AI-Powered Search with Fine-tuned SQL Generation
 
 <p align="center">
-  <img src="assets/search-results.png" alt="AI Generated SQL" width="100%"/>
+  <img src="assets/search-results.png" alt="Search Results" width="100%"/>
 </p>
 
 <p align="center">
-  <em>Natural language queries instantly converted to optimized SQL</em>
+  <em>Natural language queries converted to optimized, fine-tuned SQL with match explanations</em>
 </p>
 
 ---
 
-## Search Results
+## Search Results with Match Reason
 
 <p align="center">
   <img src="assets/results-table.png" alt="Results Table" width="100%"/>
 </p>
 
 <p align="center">
-  <em>Interactive results table with 27,100+ searchable documents</em>
+  <em>Every result includes a Match Reason showing exactly why the document was selected</em>
 </p>
 
 ---
 
-## Light Mode
+## Light Mode Support
 
 <p align="center">
   <img src="assets/light-mode.png" alt="Light Mode" width="100%"/>
@@ -64,60 +60,73 @@
 
 ---
 
-## How It Works
+## Mobile Responsive Design
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
-│  User Query     │────▶│  Llama 3.2 70B   │────▶│  SQL Query  │
-│  "find invoices │     │  (via Ollama)    │     │  Generated  │
-│   from 2024"    │     └──────────────────┘     └──────┬──────┘
-└─────────────────┘                                     │
-                                                        ▼
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
-│  Results with   │◀────│   PostgreSQL     │◀────│  Execute    │
-│  Match Reasons  │     │   Database       │     │  Query      │
-└─────────────────┘     └──────────────────┘     └─────────────┘
-```
+<p align="center">
+  <img src="assets/mobile-main.png" alt="Mobile Main" width="30%"/>
+  <img src="assets/mobile-search.png" alt="Mobile Search" width="30%"/>
+  <img src="assets/mobile-results.png" alt="Mobile Results" width="30%"/>
+</p>
 
 ---
 
-## Performance
+## System Architecture
 
-<table align="center">
-  <tr>
-    <td align="center"><strong>Query Response</strong><br/><code>~120ms</code></td>
-    <td align="center"><strong>SQL Generation</strong><br/><code>~85ms</code></td>
-    <td align="center"><strong>Search Accuracy</strong><br/><code>94.7%</code></td>
-    <td align="center"><strong>Uptime</strong><br/><code>99.9%</code></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/architecture.svg" alt="Architecture Diagram" width="100%"/>
+</p>
 
 ---
 
-## Features
+## What You Can Do
+
+| Action | Example Query |
+|--------|---------------|
+| **Search by Date Range** | `"documents from june 2023 to december 2024"` |
+| **Search by Name** | `"find all files for John Smith"` |
+| **Search by Category** | `"legal compliance documents"` |
+| **Search by Company + Date** | `"billing documents for UML from 2024"` |
+| **Find Bank Statements** | `"bank statements from january to july 2025"` |
+| **Compliance Search** | `"all compliance and audit documents"` |
+| **Multi-criteria Search** | `"HR documents for employee onboarding 2024"` |
+
+---
+
+## Key Features
 
 | Feature | Description |
 |---------|-------------|
-| **Natural Language Search** | Ask questions in plain English - AI converts to optimized SQL |
-| **Ollama + Llama 3.2 70B** | Local LLM inference for fast, private SQL generation |
-| **Smart Fuzzy Matching** | Handles typos, variations, and inconsistent data formats |
-| **Multi-Field Search** | Searches across names, dates, companies, categories, and content |
-| **Real-time Results** | Instant search results with match explanations |
-| **Dark/Light Mode** | Glassmorphism UI with theme toggle |
+| **Natural Language Search** | Ask questions in plain English - AI converts to SQL |
+| **Fine-tuned SQL Queries** | Optimized prompts handle data inconsistencies, typos, and format variations |
+| **Match Reason Column** | See exactly why each document matched your search |
+| **168,000+ Documents** | Instant search across massive document database |
+| **Fuzzy Matching** | Handles spelling errors and naming variations automatically |
 | **Export to CSV** | Download search results for further analysis |
+| **Dark/Light Mode** | Modern glassmorphism UI with theme toggle |
+| **Mobile Responsive** | Full functionality on any device |
 | **File Preview** | Open documents directly from search results |
+
+---
+
+## Fine-tuned SQL Generation
+
+The system uses carefully crafted prompts that handle real-world data quality issues:
+
+- **Name variations**: `"umair"`, `"Umair"`, `"UMAIR"`, `"Umar"` all match
+- **Date formats**: `"june 2023"`, `"6/2023"`, `"2023-06-01"` all work
+- **Company aliases**: `"UML"` = `"US Medical Labs"` = `"USMedLab"`
+- **Category matching**: `"Legal & Compliance"` = `"legal"` = `"compliance"`
 
 ---
 
 ## Tech Stack
 
-```
-Frontend                Backend                 AI/Database
-├── Vite               ├── Flask               ├── Ollama
-├── Bootstrap 5        ├── psycopg2            ├── Llama 3.2 70B
-├── Vanilla JS         ├── python-dotenv       └── PostgreSQL
-└── CSS3 Glassmorphism └── REST API
-```
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Vite, Bootstrap 5, Vanilla JS, CSS3 Glassmorphism |
+| **Backend** | Flask, Python 3.10+, REST API |
+| **AI** | Ollama, Llama 3.2 70B |
+| **Database** | PostgreSQL |
 
 ---
 
@@ -136,7 +145,7 @@ Frontend                Backend                 AI/Database
 git clone https://github.com/zeeza18/DASHBOARD-SOLUMI.git
 cd DASHBOARD-SOLUMI
 
-# Install Ollama and pull Llama model
+# Install Ollama and pull model
 ollama pull llama3.2:70b
 
 # Backend setup
@@ -153,7 +162,7 @@ npm run build
 
 ### Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file:
 
 ```env
 DB_HOST=localhost
@@ -168,10 +177,7 @@ FILE_BASE_PATH=/path/to/documents
 ### Run
 
 ```bash
-# Make sure Ollama is running
 ollama serve
-
-# Start the server
 python backend/app.py
 ```
 
@@ -179,69 +185,50 @@ Visit `http://localhost:5000`
 
 ---
 
-## API Reference
+## API Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/health` | GET | Health check and database status |
+| `/health` | GET | Database status and record count |
 | `/query` | POST | Execute natural language search |
 | `/open-file` | GET | Retrieve document by path |
 
-### Example Query
-
-```bash
-curl -X POST http://localhost:5000/query \
-  -H "Content-Type: application/json" \
-  -d '{"query": "find all invoices from january 2024"}'
-```
-
 ---
 
-## Search Examples
+## Performance
 
-| Natural Language Query | What It Finds |
-|------------------------|---------------|
-| `"documents for John from 2024"` | All docs mentioning John dated 2024 |
-| `"billing invoices march to june 2023"` | Billing docs within date range |
-| `"legal compliance documents"` | Legal/compliance category docs |
-| `"bank statements last quarter"` | Financial statements from recent months |
+<table align="center">
+  <tr>
+    <td align="center"><strong>Query Response</strong><br/><code>~150ms</code></td>
+    <td align="center"><strong>SQL Generation</strong><br/><code>~100ms</code></td>
+    <td align="center"><strong>Documents</strong><br/><code>168,992</code></td>
+    <td align="center"><strong>Accuracy</strong><br/><code>94.7%</code></td>
+  </tr>
+</table>
 
 ---
 
 ## Project Structure
 
 ```
-DASHBOARD-SOLUMI/
 ├── backend/
-│   ├── app.py              # Flask application
-│   └── requirements.txt    # Python dependencies
+│   ├── app.py              # Flask application + AI logic
+│   └── requirements.txt
 ├── frontend/
 │   ├── src/
 │   │   ├── main.js         # Application logic
 │   │   └── style.css       # Glassmorphism styles
-│   ├── index.html
 │   └── package.json
-├── static/                  # Built frontend assets
-├── assets/                  # Screenshots
-├── .env.example
+├── static/                  # Production build
+├── assets/                  # Screenshots & diagrams
 └── README.md
 ```
 
 ---
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE)
 
 ---
 
