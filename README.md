@@ -5,10 +5,10 @@
   <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
 </p>
 
-<h1 align="center">AI Document Search Dashboard</h1>
+<h1 align="center">AI Document Search & Analysis Dashboard</h1>
 
 <p align="center">
-  <strong>Natural language to SQL - Search 168,000+ documents instantly</strong>
+  <strong>Natural language to SQL - Search & analyze 168,000+ documents instantly</strong>
 </p>
 
 <p align="center">
@@ -26,33 +26,25 @@
   <img src="assets/dashboard-main.png" alt="Dashboard" width="100%"/>
 </p>
 
+<p align="center">
+  <em>Three-panel layout: Conversations | Query Area | Search Results</em>
+</p>
+
 ---
 
-## AI-Powered Search with Fine-tuned SQL Generation
+## AI-Generated SQL with Search Results
 
 <p align="center">
   <img src="assets/search-results.png" alt="Search Results" width="100%"/>
 </p>
 
 <p align="center">
-  <em>Natural language queries converted to optimized, fine-tuned SQL with match explanations</em>
+  <em>1,278 documents found - Fine-tuned SQL handles company aliases, date formats, and typos</em>
 </p>
 
 ---
 
-## Search Results with Match Reason
-
-<p align="center">
-  <img src="assets/results-table.png" alt="Results Table" width="100%"/>
-</p>
-
-<p align="center">
-  <em>Every result includes a Match Reason showing exactly why the document was selected</em>
-</p>
-
----
-
-## Light Mode Support
+## Light Mode
 
 <p align="center">
   <img src="assets/light-mode.png" alt="Light Mode" width="100%"/>
@@ -60,7 +52,7 @@
 
 ---
 
-## Mobile Responsive Design
+## Mobile Responsive
 
 <p align="center">
   <img src="assets/mobile-main.png" alt="Mobile Main" width="30%"/>
@@ -73,22 +65,18 @@
 ## System Architecture
 
 <p align="center">
-  <img src="assets/architecture.svg" alt="Architecture Diagram" width="100%"/>
+  <img src="assets/architecture.svg" alt="Architecture" width="100%"/>
 </p>
 
 ---
 
-## What You Can Do
+## Task Types
 
-| Action | Example Query |
-|--------|---------------|
-| **Search by Date Range** | `"documents from june 2023 to december 2024"` |
-| **Search by Name** | `"find all files for John Smith"` |
-| **Search by Category** | `"legal compliance documents"` |
-| **Search by Company + Date** | `"billing documents for UML from 2024"` |
-| **Find Bank Statements** | `"bank statements from january to july 2025"` |
-| **Compliance Search** | `"all compliance and audit documents"` |
-| **Multi-criteria Search** | `"HR documents for employee onboarding 2024"` |
+| Task | Description | Use Case |
+|------|-------------|----------|
+| **SEARCH** | Natural language document search | Find documents by date, name, company, category |
+| **ANALYSE** | AI-powered data analysis with charts | Generate visualizations and insights from documents |
+| **SUMMARY** | Document summarization | Get key findings and summaries |
 
 ---
 
@@ -96,26 +84,42 @@
 
 | Feature | Description |
 |---------|-------------|
-| **Natural Language Search** | Ask questions in plain English - AI converts to SQL |
-| **Fine-tuned SQL Queries** | Optimized prompts handle data inconsistencies, typos, and format variations |
-| **Match Reason Column** | See exactly why each document matched your search |
-| **168,000+ Documents** | Instant search across massive document database |
-| **Fuzzy Matching** | Handles spelling errors and naming variations automatically |
-| **Export to CSV** | Download search results for further analysis |
-| **Dark/Light Mode** | Modern glassmorphism UI with theme toggle |
-| **Mobile Responsive** | Full functionality on any device |
-| **File Preview** | Open documents directly from search results |
+| **Conversation History** | Save and continue previous search sessions |
+| **Entity Selector** | Filter by company (UML, SEM, MMM, etc.) |
+| **Type Filtering** | Filter by document type |
+| **Fine-tuned SQL** | Handles typos, date formats, company aliases |
+| **Match Reason** | See why each document matched |
+| **Export to CSV** | Download results for analysis |
+| **File Preview** | Open documents directly |
+| **Real-time Status** | Live database connection indicator |
+| **168,992 Records** | Searchable document database |
+| **Dark/Light Mode** | Theme toggle with glassmorphism UI |
+
+---
+
+## Search Examples
+
+| Query Type | Example |
+|------------|---------|
+| **Date Range** | `"documents from june 2023 to december 2024"` |
+| **By Name** | `"find all files for John Smith"` |
+| **By Category** | `"legal compliance documents"` |
+| **Company + Date** | `"billing documents for UML from 2024"` |
+| **Bank Statements** | `"bank statements january to july 2025"` |
+| **Multi-criteria** | `"HR onboarding documents 2024"` |
 
 ---
 
 ## Fine-tuned SQL Generation
 
-The system uses carefully crafted prompts that handle real-world data quality issues:
+Handles real-world data inconsistencies:
 
-- **Name variations**: `"umair"`, `"Umair"`, `"UMAIR"`, `"Umar"` all match
-- **Date formats**: `"june 2023"`, `"6/2023"`, `"2023-06-01"` all work
-- **Company aliases**: `"UML"` = `"US Medical Labs"` = `"USMedLab"`
-- **Category matching**: `"Legal & Compliance"` = `"legal"` = `"compliance"`
+```
+Name variations:    "umair" = "Umair" = "UMAIR" = "Umar"
+Date formats:       "june 2023" = "6/2023" = "2023-06-01"
+Company aliases:    "UML" = "US Medical Labs" = "USMedLab"
+Categories:         "Legal & Compliance" = "legal" = "compliance"
+```
 
 ---
 
@@ -123,62 +127,29 @@ The system uses carefully crafted prompts that handle real-world data quality is
 
 | Layer | Technology |
 |-------|------------|
-| **Frontend** | Vite, Bootstrap 5, Vanilla JS, CSS3 Glassmorphism |
+| **Frontend** | Vite + Vanilla JS, Bootstrap 5, Chart.js |
 | **Backend** | Flask, Python 3.10+, REST API |
-| **AI** | Ollama, Llama 3.2 70B |
+| **AI** | Ollama + Llama 3.2 70B |
 | **Database** | PostgreSQL |
 
 ---
 
 ## Quick Start
 
-### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- PostgreSQL
-- [Ollama](https://ollama.ai/) with Llama 3.2 70B
-
-### Installation
-
 ```bash
-# Clone the repository
 git clone https://github.com/zeeza18/DASHBOARD-SOLUMI.git
 cd DASHBOARD-SOLUMI
 
-# Install Ollama and pull model
-ollama pull llama3.2:70b
-
-# Backend setup
-cd backend
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+# Backend
+cd backend && python -m venv .venv
+.venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 
-# Frontend setup
-cd ../frontend
-npm install
-npm run build
-```
+# Frontend
+cd ../frontend && npm install && npm run build
 
-### Configuration
-
-Create a `.env` file:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=your_database
-DB_USER=postgres
-DB_PASSWORD=your_password
-OLLAMA_HOST=http://localhost:11434
-FILE_BASE_PATH=/path/to/documents
-```
-
-### Run
-
-```bash
-ollama serve
-python backend/app.py
+# Run
+cd .. && python backend/app.py
 ```
 
 Visit `http://localhost:5000`
@@ -189,9 +160,13 @@ Visit `http://localhost:5000`
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/health` | GET | Database status and record count |
-| `/query` | POST | Execute natural language search |
-| `/open-file` | GET | Retrieve document by path |
+| `/health` | GET | Database status |
+| `/query` | POST | Execute search |
+| `/analyse-chat` | POST | Run analysis |
+| `/summary-chat` | POST | Generate summary |
+| `/save-chats` | POST | Save conversations |
+| `/chats` | GET | Load conversations |
+| `/open-file` | GET | Preview document |
 
 ---
 
@@ -199,36 +174,18 @@ Visit `http://localhost:5000`
 
 <table align="center">
   <tr>
-    <td align="center"><strong>Query Response</strong><br/><code>~150ms</code></td>
-    <td align="center"><strong>SQL Generation</strong><br/><code>~100ms</code></td>
     <td align="center"><strong>Documents</strong><br/><code>168,992</code></td>
+    <td align="center"><strong>Query Time</strong><br/><code>~150ms</code></td>
+    <td align="center"><strong>SQL Gen</strong><br/><code>~100ms</code></td>
     <td align="center"><strong>Accuracy</strong><br/><code>94.7%</code></td>
   </tr>
 </table>
 
 ---
 
-## Project Structure
-
-```
-├── backend/
-│   ├── app.py              # Flask application + AI logic
-│   └── requirements.txt
-├── frontend/
-│   ├── src/
-│   │   ├── main.js         # Application logic
-│   │   └── style.css       # Glassmorphism styles
-│   └── package.json
-├── static/                  # Production build
-├── assets/                  # Screenshots & diagrams
-└── README.md
-```
-
----
-
 ## License
 
-MIT License - see [LICENSE](LICENSE)
+MIT License
 
 ---
 

@@ -554,7 +554,7 @@ def index():
             "Frontend build missing. Run `npm install` and `npm run build` inside frontend/ before starting the backend.",
             500,
         )
-    return send_from_directory(STATIC_DIR, "index.html")
+    return send_from_directory(str(STATIC_DIR), "index.html")
 
 
 @app.route("/open-file")
@@ -988,4 +988,4 @@ def list_chats():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000, use_reloader=False)
