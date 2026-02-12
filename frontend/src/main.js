@@ -34,6 +34,11 @@ const state = {
   loading: false,
   dbConnected: false,
   // Note: droppedFiles and summaryConversationId are now stored per-chat
+  // Filter state
+  filters: {
+    fileType: "ALL",
+    fileSize: "ALL",
+  },
 };
 
 const layout = `
@@ -220,12 +225,46 @@ const layout = `
         <div class="results__actions" id="resultsActions">
           <button class="action-btn primary" id="showAllBtn" style="display:none;">
             <i class="bi bi-arrows-fullscreen"></i>
-            Show All Results
+            Show All
           </button>
           <button class="action-btn" id="exportBtn">
             <i class="bi bi-download"></i>
-            Export CSV
+            Export
           </button>
+          <div class="filter-dropdown" id="filterDropdown">
+            <button class="action-btn" id="filterBtn">
+              <i class="bi bi-funnel"></i>
+              Filter
+            </button>
+            <div class="filter-dropdown__menu" id="filterMenu">
+              <div class="filter-section">
+                <label class="filter-label">File Type</label>
+                <select class="filter-select" id="filterFileType">
+                  <option value="ALL">All Types</option>
+                  <option value="PDF">PDF</option>
+                  <option value="DOCX">DOCX</option>
+                  <option value="DOC">DOC</option>
+                  <option value="XLSX">XLSX</option>
+                  <option value="TXT">TXT</option>
+                  <option value="PPTX">PPTX</option>
+                  <option value="MP4">MP4</option>
+                </select>
+              </div>
+              <div class="filter-section">
+                <label class="filter-label">File Size</label>
+                <select class="filter-select" id="filterFileSize">
+                  <option value="ALL">All Sizes</option>
+                  <option value="1">< 1 MB</option>
+                  <option value="2">< 2 MB</option>
+                  <option value="5">< 5 MB</option>
+                  <option value="10">< 10 MB</option>
+                  <option value="50">< 50 MB</option>
+                </select>
+              </div>
+              <button class="filter-apply-btn" id="applyFilterBtn">Apply Filters</button>
+              <button class="filter-clear-btn" id="clearFilterBtn">Clear Filters</button>
+            </div>
+          </div>
         </div>
 
         <!-- Results Grid -->
@@ -266,10 +305,10 @@ const layout = `
       </div>
       <div class="modal__body" id="modalBody"></div>
       <div class="modal__footer">
-        <a class="action-btn primary" id="openFileLink" target="_blank" rel="noopener noreferrer">
-          <i class="bi bi-box-arrow-up-right"></i>
-          Open File
-        </a>
+        <button class="action-btn primary" id="openFileLink">
+          <i class="bi bi-eye"></i>
+          View File
+        </button>
       </div>
     </div>
   </div>
@@ -289,6 +328,47 @@ const layout = `
         </button>
       </div>
       <div class="table-modal__body" id="tableModalBody"></div>
+    </div>
+  </div>
+
+  <!-- File Preview Modal -->
+  <div class="file-preview-modal" id="filePreviewModal">
+    <div class="file-preview-modal__backdrop" id="filePreviewBackdrop"></div>
+    <div class="file-preview-modal__content glass">
+      <div class="file-preview-modal__header">
+        <div class="file-preview-modal__title">
+          <i class="bi bi-file-earmark" id="filePreviewIcon"></i>
+          <div>
+            <h3 id="filePreviewName">Document</h3>
+            <span class="file-preview-modal__size" id="filePreviewSize"></span>
+          </div>
+        </div>
+        <div class="file-preview-modal__toolbar">
+          <button class="toolbar-btn" id="zoomOutBtn" title="Zoom Out">
+            <i class="bi bi-zoom-out"></i>
+          </button>
+          <span class="zoom-level" id="zoomLevel">100%</span>
+          <button class="toolbar-btn" id="zoomInBtn" title="Zoom In">
+            <i class="bi bi-zoom-in"></i>
+          </button>
+          <div class="toolbar-divider"></div>
+          <button class="toolbar-btn" id="fullscreenBtn" title="Fullscreen">
+            <i class="bi bi-fullscreen"></i>
+          </button>
+          <a class="toolbar-btn" id="fileDownloadBtn" title="Download" download>
+            <i class="bi bi-download"></i>
+          </a>
+          <button class="toolbar-btn close-btn" id="closeFilePreviewBtn" title="Close (Esc)">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+      <div class="file-preview-modal__body" id="filePreviewBody">
+        <div class="file-preview-loading">
+          <div class="spinner"></div>
+          <p>Loading preview...</p>
+        </div>
+      </div>
     </div>
   </div>
 `;
@@ -325,6 +405,13 @@ const els = {
   toggleSqlBtn: document.getElementById("toggleSqlBtn"),
   copySqlBtn: document.getElementById("copySqlBtn"),
   exportBtn: document.getElementById("exportBtn"),
+  filterDropdown: document.getElementById("filterDropdown"),
+  filterBtn: document.getElementById("filterBtn"),
+  filterMenu: document.getElementById("filterMenu"),
+  filterFileType: document.getElementById("filterFileType"),
+  filterFileSize: document.getElementById("filterFileSize"),
+  applyFilterBtn: document.getElementById("applyFilterBtn"),
+  clearFilterBtn: document.getElementById("clearFilterBtn"),
   loadBar: document.getElementById("loadBar"),
   dbStatus: document.getElementById("dbStatus"),
   statusText: document.getElementById("statusText"),
@@ -341,6 +428,19 @@ const els = {
   tableModalBody: document.getElementById("tableModalBody"),
   tableResultCount: document.getElementById("tableResultCount"),
   closeTableModalBtn: document.getElementById("closeTableModalBtn"),
+  // File Preview Modal
+  filePreviewModal: document.getElementById("filePreviewModal"),
+  filePreviewBackdrop: document.getElementById("filePreviewBackdrop"),
+  filePreviewBody: document.getElementById("filePreviewBody"),
+  filePreviewName: document.getElementById("filePreviewName"),
+  filePreviewSize: document.getElementById("filePreviewSize"),
+  filePreviewIcon: document.getElementById("filePreviewIcon"),
+  fileDownloadBtn: document.getElementById("fileDownloadBtn"),
+  closeFilePreviewBtn: document.getElementById("closeFilePreviewBtn"),
+  zoomInBtn: document.getElementById("zoomInBtn"),
+  zoomOutBtn: document.getElementById("zoomOutBtn"),
+  zoomLevel: document.getElementById("zoomLevel"),
+  fullscreenBtn: document.getElementById("fullscreenBtn"),
   // SUMMARY mode elements
   composerArea: document.getElementById("composerArea"),
   dropZone: document.getElementById("dropZone"),
@@ -721,9 +821,9 @@ function renderResults() {
         <span class="result-card__category">${escapeHtml(record.category || "Uncategorized")}</span>
       </div>
       <div class="result-card__actions">
-        <a class="result-card__action" href="${hasFile ? fileUrl : '#'}" ${hasFile ? 'target="_blank" rel="noopener noreferrer"' : ''} title="Open file" ${!hasFile ? 'class="result-card__action disabled"' : ''}>
-          <i class="bi bi-link-45deg"></i>
-        </a>
+        <button class="result-card__action open-file-btn" title="Open file" ${!hasFile ? 'disabled' : ''}>
+          <i class="bi bi-eye"></i>
+        </button>
         <button class="result-card__action info-btn" title="View details">
           <i class="bi bi-info-circle"></i>
         </button>
@@ -741,10 +841,10 @@ function renderResults() {
       card.classList.remove("dragging");
     });
 
-    // Link click - prevent if no file
-    const linkBtn = card.querySelector('a.result-card__action');
-    if (!hasFile) {
-      linkBtn.addEventListener('click', (e) => e.preventDefault());
+    // Open file button
+    const openBtn = card.querySelector('.open-file-btn');
+    if (hasFile) {
+      openBtn.addEventListener('click', () => openFilePreview(record));
     }
 
     // Info button opens modal
@@ -1501,20 +1601,30 @@ function sendMessage(showAll = false) {
 }
 
 // Modal
+let currentModalRecord = null;
+
 function openRecordModal(record) {
+  currentModalRecord = record;
   els.modalTitle.textContent = record.filename || "Document";
   els.modalBody.innerHTML = buildRecordDetail(record);
 
   if (record.filepath) {
-    els.openFileLink.href = `/open-file?path=${encodeURIComponent(record.filepath)}`;
+    els.openFileLink.disabled = false;
     els.openFileLink.classList.remove("is-disabled");
   } else {
-    els.openFileLink.removeAttribute("href");
+    els.openFileLink.disabled = true;
     els.openFileLink.classList.add("is-disabled");
   }
 
   els.modal.classList.add("is-open");
   document.body.style.overflow = "hidden";
+}
+
+function handleOpenFileFromModal() {
+  if (currentModalRecord && currentModalRecord.filepath) {
+    closeRecordModal();
+    openFilePreview(currentModalRecord);
+  }
 }
 
 function closeRecordModal() {
@@ -1548,7 +1658,8 @@ function buildRecordDetail(record) {
 
 // Export CSV
 function exportToCSV() {
-  if (!state.results.length) return;
+  const results = getFilteredResults();
+  if (!results.length) return;
 
   // Define column order for export
   const exportColumns = [
@@ -1568,7 +1679,7 @@ function exportToCSV() {
   let csv = exportColumns.map(c => c.label).join(",") + "\n";
 
   // Data rows
-  state.results.forEach((row) => {
+  results.forEach((row) => {
     const values = exportColumns.map(({ key }) => {
       let val = row[key] ?? "";
       val = String(val).replace(/"/g, '""');
@@ -1589,9 +1700,173 @@ function exportToCSV() {
   URL.revokeObjectURL(url);
 }
 
+// Filter Functions
+function toggleFilterMenu(e) {
+  e.stopPropagation();
+  els.filterMenu.classList.toggle("active");
+}
+
+function applyFilters() {
+  state.filters.fileType = els.filterFileType.value;
+  state.filters.fileSize = els.filterFileSize.value;
+
+  // Update filter button appearance
+  const hasActiveFilter = state.filters.fileType !== "ALL" || state.filters.fileSize !== "ALL";
+  els.filterBtn.classList.toggle("has-filter", hasActiveFilter);
+
+  // Re-render results with filters
+  renderFilteredResults();
+
+  // Close the menu
+  els.filterMenu.classList.remove("active");
+}
+
+function clearFilters() {
+  state.filters.fileType = "ALL";
+  state.filters.fileSize = "ALL";
+  els.filterFileType.value = "ALL";
+  els.filterFileSize.value = "ALL";
+  els.filterBtn.classList.remove("has-filter");
+
+  // Re-render results without filters
+  renderFilteredResults();
+
+  // Close the menu
+  els.filterMenu.classList.remove("active");
+}
+
+function getFilteredResults() {
+  // Get results from active chat
+  const chat = state.chats.find((c) => c.id === state.activeChatId);
+  let results = [...(chat?.results || [])];
+
+  // Filter by file type
+  if (state.filters.fileType !== "ALL") {
+    const ext = state.filters.fileType.toLowerCase();
+    results = results.filter(r => {
+      const filename = (r.filename || "").toLowerCase();
+      return filename.endsWith(`.${ext}`);
+    });
+  }
+
+  // Filter by file size (if size info is available)
+  if (state.filters.fileSize !== "ALL") {
+    const maxSizeMB = parseInt(state.filters.fileSize);
+    results = results.filter(r => {
+      // If no size info, include the result
+      if (!r.filesize && !r.file_size && !r.size) return true;
+      const sizeBytes = r.filesize || r.file_size || r.size || 0;
+      const sizeMB = sizeBytes / (1024 * 1024);
+      return sizeMB < maxSizeMB;
+    });
+  }
+
+  return results;
+}
+
+function renderFilteredResults() {
+  const results = getFilteredResults();
+  const chat = state.chats.find((c) => c.id === state.activeChatId);
+  const meta = chat?.meta || state.meta;
+  const totalResults = chat?.results?.length || 0;
+
+  // Update badges
+  els.totalBadge.innerHTML = `<i class="bi bi-collection"></i> Total: ${meta.total || 0}`;
+  els.returnedBadge.innerHTML = `<i class="bi bi-eye"></i> Showing: ${results.length}`;
+
+  // Update subtitle
+  if (results.length > 0) {
+    const filterInfo = (state.filters.fileType !== "ALL" || state.filters.fileSize !== "ALL")
+      ? " (filtered)" : "";
+    els.resultsSubtitle.textContent = `Found ${results.length} matching documents${filterInfo}`;
+  } else if (totalResults > 0) {
+    els.resultsSubtitle.textContent = "No results match current filters";
+  } else {
+    els.resultsSubtitle.textContent = "Run a query to see results";
+  }
+
+  // Show/hide Show All button
+  els.showAllBtn.style.display = results.length > 0 ? "inline-flex" : "none";
+
+  // Render results
+  els.resultsGrid.innerHTML = "";
+
+  if (!results.length) {
+    els.resultsGrid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="bi bi-funnel"></i>
+        </div>
+        <h4>${totalResults > 0 ? "No Results Match Filters" : "No Results Yet"}</h4>
+        <p>${totalResults > 0 ? "Try adjusting your filter criteria" : "Enter a query to search documents"}</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Create cards for each result
+  results.forEach((record, index) => {
+    const card = document.createElement("article");
+    card.className = "result-card";
+    card.draggable = true;
+    card.dataset.recordIndex = index;
+
+    const fileUrl = record.filepath ? `/open-file?path=${encodeURIComponent(record.filepath)}` : '#';
+    const hasFile = !!record.filepath;
+
+    card.innerHTML = `
+      <div class="result-card__drag-handle">
+        <i class="bi bi-grip-vertical"></i>
+      </div>
+      <div class="result-card__icon">
+        <i class="bi ${getFileIcon(record.filename)}"></i>
+      </div>
+      <div class="result-card__content">
+        <h4 class="result-card__filename">${escapeHtml(record.filename || "Untitled")}</h4>
+        <span class="result-card__category">${escapeHtml(record.category || "Uncategorized")}</span>
+      </div>
+      <div class="result-card__actions">
+        <button class="result-card__action open-file-btn" title="Open file" ${!hasFile ? 'disabled' : ''}>
+          <i class="bi bi-eye"></i>
+        </button>
+        <button class="result-card__action info-btn" title="View details">
+          <i class="bi bi-info-circle"></i>
+        </button>
+      </div>
+    `;
+
+    // Drag events for SUMMARY mode
+    card.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("application/json", JSON.stringify(record));
+      e.dataTransfer.effectAllowed = "copy";
+      card.classList.add("dragging");
+    });
+
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+    });
+
+    // Open file button
+    const openBtn = card.querySelector('.open-file-btn');
+    if (hasFile) {
+      openBtn.addEventListener('click', () => openFilePreview(record));
+    }
+
+    // Info button opens modal
+    card.querySelector('.info-btn').addEventListener('click', () => {
+      openRecordModal(record);
+    });
+
+    els.resultsGrid.appendChild(card);
+  });
+
+  // Update mobile FAB count
+  updateFabCount();
+}
+
 // Show All Results in Table View
 function showAllResultsTable() {
-  const rows = state.results;
+  const rows = getFilteredResults();
   if (!rows.length) {
     alert("No results to display");
     return;
@@ -1651,11 +1926,9 @@ function showAllResultsTable() {
             ${shortDesc ? `<p class="table-card__desc">${escapeHtml(shortDesc)}</p>` : ""}
           </div>
           <div class="table-card__actions">
-            <a class="table-card__action ${hasFile ? "" : "disabled"}" href="${fileUrl}" ${
-        hasFile ? 'target="_blank" rel="noopener noreferrer"' : ""
-      } title="Open file">
-              <i class="bi bi-link-45deg"></i>
-            </a>
+            <button class="table-card__action" data-card-open="${idx}" title="Open file" ${!hasFile ? 'disabled' : ''}>
+              <i class="bi bi-eye"></i>
+            </button>
             <button class="table-card__action" data-card-info="${idx}" title="View details">
               <i class="bi bi-info-circle"></i>
             </button>
@@ -1666,6 +1939,16 @@ function showAllResultsTable() {
     .join("");
 
   els.tableModalBody.innerHTML = `<div class="table-card-list">${cardsHTML}</div>`;
+
+  // Add click handlers for open file buttons
+  els.tableModalBody.querySelectorAll("[data-card-open]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.cardOpen, 10);
+      if (rows[idx].filepath) {
+        openFilePreview(rows[idx]);
+      }
+    });
+  });
 
   // Add click handlers for info buttons
   els.tableModalBody.querySelectorAll("[data-card-info]").forEach((btn) => {
@@ -1683,6 +1966,291 @@ function showAllResultsTable() {
 function closeTableModal() {
   els.tableModal.classList.remove("is-open");
   document.body.style.overflow = "";
+}
+
+// ============================================
+// FILE PREVIEW MODAL
+// ============================================
+
+function getFileExtension(filename) {
+  return (filename || "").split(".").pop()?.toLowerCase() || "";
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+}
+
+function canPreviewInBrowser(ext) {
+  return ["pdf", "txt", "html", "htm", "jpg", "jpeg", "png", "gif", "svg", "mp4", "webm", "mp3", "wav"].includes(ext);
+}
+
+function canPreviewOffice(ext) {
+  return ["docx", "doc", "xlsx", "xls", "pptx", "ppt"].includes(ext);
+}
+
+async function openFilePreview(record) {
+  const filepath = record.filepath;
+  const filename = record.filename || "Document";
+  const ext = getFileExtension(filename);
+  const fileUrl = `/open-file?path=${encodeURIComponent(filepath)}`;
+
+  // For PDFs and images, open directly in new tab
+  if (ext === "pdf" || ["jpg", "jpeg", "png", "gif", "svg"].includes(ext)) {
+    window.open(fileUrl, "_blank");
+    return;
+  }
+
+  // For videos/audio, open in new tab as well
+  if (["mp4", "webm", "mp3", "wav"].includes(ext)) {
+    window.open(fileUrl, "_blank");
+    return;
+  }
+
+  // For Office files and others, show preview modal
+  els.filePreviewName.textContent = filename;
+  els.filePreviewIcon.className = `bi ${getFileIcon(filename)}`;
+  if (els.fileDownloadBtn) {
+    els.fileDownloadBtn.href = fileUrl;
+    els.fileDownloadBtn.download = filename;
+  }
+
+  // Show loading state
+  els.filePreviewBody.innerHTML = `
+    <div class="file-preview-loading">
+      <div class="spinner"></div>
+      <p>Loading file info...</p>
+    </div>
+  `;
+
+  els.filePreviewModal.classList.add("is-open");
+  document.body.style.overflow = "hidden";
+
+  // Fetch file info (with fallback if endpoint not available)
+  let info = null;
+  try {
+    const response = await fetch(`/file-info?path=${encodeURIComponent(filepath)}`);
+    if (response.ok) {
+      info = await response.json();
+      if (info.error) info = null;
+    }
+  } catch (e) {
+    // Endpoint might not be available, continue with fallback
+  }
+
+  // Use fallback values if file-info failed
+  if (!info) {
+    info = {
+      size: 0,
+      size_mb: 0,
+      extension: `.${ext}`,
+      can_preview: canPreviewInBrowser(ext),
+      can_office_preview: canPreviewOffice(ext),
+    };
+    els.filePreviewSize.textContent = "";
+  } else {
+    els.filePreviewSize.textContent = formatFileSize(info.size);
+  }
+
+  // Check file size for optimization warning
+  const isLargeFile = info.size_mb > 10;
+  const sizeWarning = isLargeFile ? `
+    <div class="file-preview-warning">
+      <i class="bi bi-exclamation-circle"></i>
+      <span>Large file (${info.size_mb} MB) - Preview may be slow</span>
+    </div>
+  ` : "";
+
+  if (ext === "xlsx" || ext === "xls") {
+    // Excel files - render with SheetJS
+    els.filePreviewBody.innerHTML = `
+      ${sizeWarning}
+      <div class="file-preview-loading">
+        <div class="spinner"></div>
+        <p>Loading spreadsheet...</p>
+      </div>
+    `;
+
+    try {
+      const response = await fetch(fileUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+
+      // Get sheet names for tabs
+      const sheetNames = workbook.SheetNames;
+
+      // Generate HTML for first sheet
+      const firstSheet = workbook.Sheets[sheetNames[0]];
+      const htmlTable = XLSX.utils.sheet_to_html(firstSheet, { editable: false });
+
+      // Create sheet tabs if multiple sheets
+      const sheetTabs = sheetNames.length > 1 ? `
+        <div class="excel-sheet-tabs">
+          ${sheetNames.map((name, i) => `
+            <button class="excel-sheet-tab ${i === 0 ? 'active' : ''}" data-sheet="${i}">${escapeHtml(name)}</button>
+          `).join('')}
+        </div>
+      ` : '';
+
+      els.filePreviewBody.innerHTML = `
+        ${sizeWarning}
+        ${sheetTabs}
+        <div class="excel-preview-container" id="excelContainer">
+          ${htmlTable}
+        </div>
+      `;
+
+      // Add sheet tab switching
+      if (sheetNames.length > 1) {
+        els.filePreviewBody.querySelectorAll('.excel-sheet-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            els.filePreviewBody.querySelectorAll('.excel-sheet-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const sheetIdx = parseInt(tab.dataset.sheet);
+            const sheet = workbook.Sheets[sheetNames[sheetIdx]];
+            const html = XLSX.utils.sheet_to_html(sheet, { editable: false });
+            document.getElementById('excelContainer').innerHTML = html;
+          });
+        });
+      }
+    } catch (err) {
+      els.filePreviewBody.innerHTML = `
+        <div class="file-preview-error">
+          <i class="bi bi-exclamation-triangle"></i>
+          <p>Could not load spreadsheet - use Download button above</p>
+        </div>
+      `;
+    }
+
+  } else if (ext === "docx") {
+    // Word documents - render with Mammoth.js
+    els.filePreviewBody.innerHTML = `
+      ${sizeWarning}
+      <div class="file-preview-loading">
+        <div class="spinner"></div>
+        <p>Loading document...</p>
+      </div>
+    `;
+
+    try {
+      const response = await fetch(fileUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+
+      els.filePreviewBody.innerHTML = `
+        ${sizeWarning}
+        <div class="docx-preview-container">
+          ${result.value}
+        </div>
+      `;
+    } catch (err) {
+      els.filePreviewBody.innerHTML = `
+        <div class="file-preview-error">
+          <i class="bi bi-exclamation-triangle"></i>
+          <p>Could not load document - use Download button above</p>
+        </div>
+      `;
+    }
+
+  } else if (ext === "doc" || ext === "ppt" || ext === "pptx") {
+    // Legacy formats - show info card
+    const fileTypeNames = {
+      'doc': 'Word Document (Legacy)',
+      'pptx': 'PowerPoint Presentation',
+      'ppt': 'PowerPoint (Legacy)',
+    };
+    els.filePreviewBody.innerHTML = `
+      ${sizeWarning}
+      <div class="file-preview-info-card">
+        <i class="bi ${getFileIcon(filename)} file-preview-big-icon"></i>
+        <h4>${escapeHtml(filename)}</h4>
+        <p class="file-size">${info.size ? formatFileSize(info.size) : ''}</p>
+        <p class="file-type">${fileTypeNames[ext] || ext.toUpperCase()}</p>
+        <p class="file-preview-hint">This format cannot be previewed - use Download button above</p>
+      </div>
+    `;
+
+  } else if (ext === "txt") {
+    // Text files - fetch and display content
+    try {
+      const textResponse = await fetch(fileUrl);
+      const text = await textResponse.text();
+      const previewText = isLargeFile ? text.substring(0, 50000) + "\n\n... (truncated for large file)" : text;
+      els.filePreviewBody.innerHTML = `
+        ${sizeWarning}
+        <pre class="file-preview-text">${escapeHtml(previewText)}</pre>
+      `;
+    } catch {
+      els.filePreviewBody.innerHTML = `
+        <div class="file-preview-error">
+          <i class="bi bi-exclamation-triangle"></i>
+          <p>Could not load text content</p>
+        </div>
+      `;
+    }
+  } else {
+    // Other files - show info card
+    els.filePreviewBody.innerHTML = `
+      ${sizeWarning}
+      <div class="file-preview-info-card">
+        <i class="bi ${getFileIcon(filename)} file-preview-big-icon"></i>
+        <h4>${escapeHtml(filename)}</h4>
+        <p class="file-size">${info.size ? formatFileSize(info.size) : ''}</p>
+        <p class="file-type">${ext.toUpperCase()} File</p>
+        <p class="file-preview-hint">Cannot preview - use Download button above</p>
+      </div>
+    `;
+  }
+}
+
+function closeFilePreview() {
+  els.filePreviewModal.classList.remove("is-open");
+  els.filePreviewModal.classList.remove("is-fullscreen");
+  document.body.style.overflow = "";
+  els.filePreviewBody.innerHTML = "";
+  // Reset zoom
+  currentZoom = 100;
+  els.zoomLevel.textContent = "100%";
+  els.fullscreenBtn.innerHTML = '<i class="bi bi-fullscreen"></i>';
+}
+
+// Zoom functionality
+let currentZoom = 100;
+const ZOOM_STEP = 25;
+const ZOOM_MIN = 50;
+const ZOOM_MAX = 200;
+
+function zoomIn() {
+  if (currentZoom < ZOOM_MAX) {
+    currentZoom += ZOOM_STEP;
+    applyZoom();
+  }
+}
+
+function zoomOut() {
+  if (currentZoom > ZOOM_MIN) {
+    currentZoom -= ZOOM_STEP;
+    applyZoom();
+  }
+}
+
+function applyZoom() {
+  els.zoomLevel.textContent = `${currentZoom}%`;
+  const container = els.filePreviewBody.querySelector('.excel-preview-container, .docx-preview-container, .file-preview-text');
+  if (container) {
+    container.style.transform = `scale(${currentZoom / 100})`;
+    container.style.transformOrigin = 'top left';
+  }
+}
+
+function toggleFullscreen() {
+  els.filePreviewModal.classList.toggle("is-fullscreen");
+  const isFullscreen = els.filePreviewModal.classList.contains("is-fullscreen");
+  els.fullscreenBtn.innerHTML = isFullscreen
+    ? '<i class="bi bi-fullscreen-exit"></i>'
+    : '<i class="bi bi-fullscreen"></i>';
 }
 
 // Copy SQL
@@ -1759,7 +2327,9 @@ function openMobileResults() {
 function closeMobileResults() {
   els.resultsPaneEl.classList.remove("mobile-open");
   // Show FAB if we have results
-  if (state.results.length > 0 && isMobile()) {
+  const chat = state.chats.find((c) => c.id === state.activeChatId);
+  const hasResults = (chat?.results?.length || 0) > 0;
+  if (hasResults && isMobile()) {
     els.resultsFab.classList.remove("hidden");
   }
 }
@@ -1935,6 +2505,25 @@ function init() {
     els.tableModalBackdrop.addEventListener("click", closeTableModal);
     els.exportBtn.addEventListener("click", exportToCSV);
 
+    // File preview modal events
+    els.closeFilePreviewBtn.addEventListener("click", closeFilePreview);
+    els.filePreviewBackdrop.addEventListener("click", closeFilePreview);
+    els.zoomInBtn.addEventListener("click", zoomIn);
+    els.zoomOutBtn.addEventListener("click", zoomOut);
+    els.fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+    // Filter dropdown events
+    els.filterBtn.addEventListener("click", toggleFilterMenu);
+    els.applyFilterBtn.addEventListener("click", applyFilters);
+    els.clearFilterBtn.addEventListener("click", clearFilters);
+
+    // Close filter menu when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!els.filterDropdown.contains(e.target)) {
+        els.filterMenu.classList.remove("active");
+      }
+    });
+
     els.messageInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -1946,13 +2535,16 @@ function init() {
 
     els.modalBackdrop.addEventListener("click", closeRecordModal);
     els.closeModalBtn.addEventListener("click", closeRecordModal);
+    els.openFileLink.addEventListener("click", handleOpenFileFromModal);
 
     // Close modal on Escape
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         closeRecordModal();
+        closeFilePreview();
         closeMobileSidebar();
         closeMobileResults();
+        els.filterMenu.classList.remove("active");
       }
     });
 

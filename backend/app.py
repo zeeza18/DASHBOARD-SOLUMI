@@ -580,7 +580,67 @@ def open_file():
         return jsonify({"error": "File not found"}), 404
 
     try:
-        return send_file(abs_path, as_attachment=False)
+        # Get file extension and set appropriate MIME type
+        ext = os.path.splitext(abs_path)[1].lower()
+        mime_types = {
+            '.pdf': 'application/pdf',
+            '.txt': 'text/plain',
+            '.html': 'text/html',
+            '.htm': 'text/html',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.svg': 'image/svg+xml',
+            '.mp4': 'video/mp4',
+            '.webm': 'video/webm',
+            '.mp3': 'audio/mpeg',
+            '.wav': 'audio/wav',
+        }
+        mimetype = mime_types.get(ext)
+
+        response = send_file(abs_path, as_attachment=False, mimetype=mimetype)
+        # Force inline display for viewable types
+        if ext in ['.pdf', '.txt', '.html', '.htm', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.mp4', '.webm', '.mp3', '.wav']:
+            response.headers['Content-Disposition'] = f'inline; filename="{os.path.basename(abs_path)}"'
+        return response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/file-info")
+def file_info():
+    """
+    Get file metadata (size, type, etc.) for preview optimization.
+    """
+    file_path = request.args.get("path")
+    if not file_path:
+        return jsonify({"error": "Missing file path"}), 400
+
+    abs_path = os.path.abspath(file_path)
+    try:
+        common = os.path.commonpath([abs_path, ALLOWED_BASE_PATH])
+    except ValueError:
+        common = ""
+
+    if common != ALLOWED_BASE_PATH:
+        return jsonify({"error": "Access denied for this path"}), 403
+
+    if not os.path.exists(abs_path):
+        return jsonify({"error": "File not found"}), 404
+
+    try:
+        stat = os.stat(abs_path)
+        ext = os.path.splitext(abs_path)[1].lower()
+        return jsonify({
+            "filename": os.path.basename(abs_path),
+            "size": stat.st_size,
+            "size_mb": round(stat.st_size / (1024 * 1024), 2),
+            "extension": ext,
+            "modified": stat.st_mtime,
+            "can_preview": ext in ['.pdf', '.txt', '.html', '.htm', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.mp4', '.webm', '.mp3', '.wav'],
+            "can_office_preview": ext in ['.docx', '.doc', '.xlsx', '.xls', '.pptx', '.ppt'],
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
